@@ -47,24 +47,40 @@ class Museo:
     def iniciar_objetos(self): 
 
         url_departamentos = "https://collectionapi.metmuseum.org/public/collection/v1/departments"
+        url_obras_id = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
         url_obras = "https://collectionapi.metmuseum.org/public/collection/v1/objects/"
 
-        id_obra_solicitada = input("Ingrese el ID de la obra: ")
+        data_departamentos = requests.get(url_departamentos)
+        data_obras_id = requests.get(url_obras_id)
+        # id_obra_solicitada = input("Ingrese el ID de la obra: ")
+        # data_obras = requests.get(url_obras + id_obra_solicitada)
 
-        data_departmentos = requests.get(url_departamentos)
-        data_obras = requests.get(url_obras + id_obra_solicitada)
-
-        db_departmentos = data_departmentos.json()
-        db_obras = data_obras.json()
+        db_departamentos = data_departamentos.json()
+        db_obras_id = data_obras_id.json()
+        # db_obras = data_obras.json()
 
 
 
         departamentos_dic = self.db_departamentos["departments"]
+        obras_dic = {}
 
         self.departamentos = []
         self.obras = []
 
         for dpto in departamentos_dic: 
-            self.departamentos.append(Departamento(dpto["id"], dpto["nombre"]))
+            self.departamentos.append(Departamento(dpto["departmentId"], dpto["displayName"]))
+
+        for id in db_obras_id["objectIDs"]: 
+            url = url_obras + str(id)
+            obras = requests.get(url)
+            db_obra = obras.json() 
+            todas_obras = []
+            todas_obras.append(db_obra)
+            obras_dic["obras"] = todas_obras
+
+        for obra in obras_dic: 
+            self.obras.append(Obra(obra["objectID"], obra["title"], obra["artistDisplayName"], obra["artistNationality"], obra["artistBeginDate"], obra["artistEndDate"], obra["classification"], obra["objectDate"], obra["primaryImage"]))
+
+
         
         
