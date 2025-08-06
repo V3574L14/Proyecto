@@ -25,6 +25,5 @@ class Obra:
         print(f"\tFecha de muerte: {self.fecha_muerte}")
         print(f"Tipo: {self.tipo}")
         print(f"Año de creacion: {self.año_creacion}")
-        print(f"Imagen: {self.imagen}")
     
     # hay varias obras con informacion vacia. reemplazar por "Desconocido". 
