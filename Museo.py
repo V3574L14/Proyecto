@@ -54,12 +54,14 @@ class Museo:
                 img = Image.open(nombre_archivo_destino) 
                 img.show() 
 
+
     def busqueda_por_autor(self): 
         autor_seleccionado = input("---> Ingrese el nombre del autor: ")
         for obra in self.obras: 
             if obra.autor == autor_seleccionado:
                 obra.show() #el objeto esta creado en otra funcion
                 print()
+
 
     def busqueda_por_nacionalidad(self): 
         df = pd.read_csv("CH_Nationality_List_20171130_v1.csv")
@@ -68,11 +70,9 @@ class Museo:
         
         print()
         nac_seleccionada = input("---> Escriba la nacionalidad del autor: ")
-        for obra in self.obras: 
-            if obra.nacionalidad == nac_seleccionada: 
-                obra.show() #el objeto esta creado en otra funcion
-                print()
-    
+        self.obtener_obras(nac_seleccionada)
+
+
     def busqueda_por_departamento(self): 
         url_departamentos = "https://collectionapi.metmuseum.org/public/collection/v1/departments"
         data_departamentos = requests.get(url_departamentos)
@@ -88,24 +88,22 @@ class Museo:
         eleccion = int(input("---> Ingrese el ID del departamento seleccionado: "))
         print()
 
-        url_obras_id = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
-        data_obras_id = requests.get(url_obras_id, params={"departmentIds": eleccion, "limit":10})
+        url_obras = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
+        data_obras_id = requests.get(url_obras, params={"departmentIds": eleccion, "limit":10})
         db_obras = data_obras_id.json()
 
         db_obras_id = db_obras['objectIDs']
 
-        url_obras = "https://collectionapi.metmuseum.org/public/collection/v1/objects/"
         indice_actual = 0 
         elementos = 20
         total_obras = len(db_obras_id)
 
         while indice_actual < total_obras:
             ids_actuales = db_obras_id[indice_actual:indice_actual + elementos]
-            self.obras = []
                    
             for id in ids_actuales:
                 try:
-                    url = url_obras + str(id)
+                    url = url_obras + "/" + str(id)
                     data_obras = requests.get(url)
                     db_obra = data_obras.json()
 
@@ -134,3 +132,33 @@ class Museo:
                 print("No hay más obras por mostrar.")
             
             break
+    
+
+    def obtener_obras(self, seleccion):
+        url_obras = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
+        data_obras_id = requests.get(url_obras)
+        db_obras_id = data_obras_id.json()
+                           
+        for id in db_obras_id["objectIDs"]:
+            try:
+                url = url_obras + "/" + str(id)
+                data_obras = requests.get(url)
+                db_obra = data_obras.json()
+
+                obra = Obra(db_obra['objectID'], db_obra['title'], db_obra['artistDisplayName'], db_obra['artistNationality'], db_obra['artistBeginDate'], db_obra['artistEndDate'], db_obra["classification"], db_obra["objectDate"], db_obra["primaryImage"]) 
+                self.obras.append(obra)
+
+            except Exception as e:
+                print(f'Error con {id}, respuesta api: {data_obras}, data: {db_obra}, url: {url}, error: {e}')
+                break
+            
+        for obra in self.obras:
+            if seleccion is True: 
+                if obra.nacionalidad == seleccion:
+                    obra.show()
+                    print()
+                    return obra.show()
+                elif obra.autor == seleccion:
+                    obra.show()
+                    print()
+                    return obra.show()
