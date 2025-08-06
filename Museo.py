@@ -47,12 +47,14 @@ class Museo:
             if obra.id == id_seleccionado:
                 print()
                 obra.detalles_obra()
-                
-                api_url = obra.imagen #hay obras que no tienen un link para la imagen. Indicar que no se encuentra disponible
-                nombre_archivo_destino = "logo_aleatorio"                 
-                nombre_archivo_destino = guardar_imagen_desde_url(api_url, nombre_archivo_destino) 
-                img = Image.open(nombre_archivo_destino) 
-                img.show() 
+                if obra.imagen == "":
+                    print("~ Imagen no disponible")
+                else: 
+                    api_url = obra.imagen
+                    nombre_archivo_destino = "logo_aleatorio"                 
+                    nombre_archivo_destino = guardar_imagen_desde_url(api_url, nombre_archivo_destino) 
+                    img = Image.open(nombre_archivo_destino) 
+                    img.show() 
 
 
     def busqueda_por_autor(self): 

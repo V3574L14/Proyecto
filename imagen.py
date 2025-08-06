@@ -21,7 +21,7 @@ def guardar_imagen_desde_url(url, nombre_archivo):
         with open(nombre_archivo_final, 'wb') as file: 
             for chunk in response.iter_content(chunk_size=8192): 
                 file.write(chunk) 
-        print(f"Imagen guardada exitosamente como '{nombre_archivo_final}'")
+        print(f"~ Imagen guardada exitosamente como '{nombre_archivo_final}'")
 
     except requests.exceptions.RequestException as e: 
         print(f"Error al hacer el request: {e}") 
