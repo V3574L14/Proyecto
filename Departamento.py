@@ -5,5 +5,4 @@ class Departamento:
         self.nombre = nombre
 
     def show(self): 
-        print(f"ID: {self.id}")
-        print(f"Nombre: {self.nombre}")
+        print(f"ID: {self.id} - {self.nombre}")

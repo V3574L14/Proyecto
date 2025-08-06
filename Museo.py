@@ -1,21 +1,33 @@
 from Departamento import Departamento
 from Obra import Obra
+import pandas as pd
 import requests
 
 class Museo: 
+    def __init__(self):
+        self.departamentos = []
+        self.obras = []
 
     def start(self): 
-        self.iniciar_objetos()
 
         while True: 
-            menu = input("\n***** METROART *****\n\nBienvenido al catálogo en linea de la colección de arte del Museo Metropolitano de Arte\n\nSeleccione una opcion:\n\t1. Busqueda de obras\n\t2.Mostrar detalles de la obra\n\t3. Salir\n---> ")
+            menu = input("\n\t\t***** METROART MUSEUM *****\n\t\t---------------------------\n¡Bienvenido al catálogo en linea de la colección del Museo Metropolitano de Arte!\n\nSeleccione una opcion:\n\t1. Busqueda de obras\n\t2. Mostrar detalles de la obra\n\t3. Salir\n---> ")
 
             if menu == "1": 
-                busqueda = input("\n\tBUSQUEDA DE OBRAS\n\nVer listas de obras por:\n\ta. Departamento\n\tb. Nacionalidad del autor\n\tc. Nombre del autor\n---> ")
+                busqueda = input("\nVer listas de obras por:\n\ta. Departamento\n\tb. Nacionalidad del autor\n\tc. Nombre del autor\n---> ")
+                
                 if busqueda == "a": 
+                    print()
                     self.busqueda_por_departamento()
+                    print()
+                    self.mostrar_detalles_obra()
+                
                 elif busqueda == "b": 
-                    pass
+                    print()
+                    self.busqueda_por_nacionalidad()
+                    print()
+                    self.mostrar_detalles_obra()
+                
                 elif busqueda == "c": 
                     pass
             
@@ -30,57 +42,94 @@ class Museo:
 
 
     def mostrar_detalles_obra(self): 
-        pass
+        id_seleccionado = int(input("---> Ingrese el ID de la obra seleccionada: ")) 
+        for obra in self.obras:
+            if obra.id == id_seleccionado:
+                print()
+                obra.detalles_obra()
+
+    # def resultado_busqueda(self):
+    #     id_seleccionado = int(input("---> Ingrese el ID de la obra seleccionada: ")) 
+    #     for obra in self.obras:
+    #         if obra.id == id_seleccionado:
+    #             print()
+    #             obra.show()
     
     def busqueda_por_autor(self): ###
         pass
 
-    def busqueda_por_nacionalidad(self): ###
-        pass
+    def busqueda_por_nacionalidad(self): 
 
+        df = pd.read_csv("CH_Nationality_List_20171130_v1.csv")
+        for index, row in df.iterrows():
+            print(f"{index + 1}. {row['Nationality']}")
+        
+        print()
+        nac_seleccionada = input("---> Escriba la nacionalidad del autor: ")
+        for obra in self.obras: 
+            if obra.nacionalidad == nac_seleccionada:
+                obra.show()
+                print()
+    
     def busqueda_por_departamento(self): 
-        for dpto in self.departamentos: 
-            dpto.show()
-            print()
-
-
-    def iniciar_objetos(self): 
 
         url_departamentos = "https://collectionapi.metmuseum.org/public/collection/v1/departments"
-        url_obras_id = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
-        url_obras = "https://collectionapi.metmuseum.org/public/collection/v1/objects/"
-
         data_departamentos = requests.get(url_departamentos)
-        data_obras_id = requests.get(url_obras_id)
-        # id_obra_solicitada = input("Ingrese el ID de la obra: ")
-        # data_obras = requests.get(url_obras + id_obra_solicitada)
-
         db_departamentos = data_departamentos.json()
-        db_obras_id = data_obras_id.json()
-        # db_obras = data_obras.json()
 
-
-
-        departamentos_dic = self.db_departamentos["departments"]
-        obras_dic = {}
-
-        self.departamentos = []
-        self.obras = []
-
-        for dpto in departamentos_dic: 
+        for dpto in db_departamentos["departments"]: 
             self.departamentos.append(Departamento(dpto["departmentId"], dpto["displayName"]))
-
-        for id in db_obras_id["objectIDs"]: 
-            url = url_obras + str(id)
-            obras = requests.get(url)
-            db_obra = obras.json() 
-            todas_obras = []
-            todas_obras.append(db_obra)
-            obras_dic["obras"] = todas_obras
-
-        for obra in obras_dic: 
-            self.obras.append(Obra(obra["objectID"], obra["title"], obra["artistDisplayName"], obra["artistNationality"], obra["artistBeginDate"], obra["artistEndDate"], obra["classification"], obra["objectDate"], obra["primaryImage"]))
-
-
         
+        for departamento in self.departamentos:
+            departamento.show()
+            print()
         
+        eleccion = int(input("---> Ingrese el ID del departamento seleccionado: "))
+        print()
+
+        url_obras_id = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
+        data_obras_id = requests.get(url_obras_id, params={"departmentIds": eleccion, "limit":10})
+        db_obras = data_obras_id.json()
+
+        db_obras_id = db_obras['objectIDs']
+
+        url_obras = "https://collectionapi.metmuseum.org/public/collection/v1/objects/"
+        indice_actual = 0 
+        elementos = 20
+        total_obras = len(db_obras_id)
+
+        while indice_actual < total_obras:
+            ids_actuales = db_obras_id[indice_actual:indice_actual + elementos]
+            self.obras = []
+                   
+            for id in ids_actuales:
+                try:
+                    url = url_obras + str(id)
+                    data_obras = requests.get(url)
+                    db_obra = data_obras.json()
+
+                    obra = Obra(db_obra['objectID'], db_obra['title'], db_obra['artistDisplayName'], db_obra['artistNationality'], db_obra['artistBeginDate'], db_obra['artistEndDate'], db_obra["classification"], db_obra["objectDate"], db_obra["primaryImage"]) 
+                    self.obras.append(obra)
+
+                except Exception as e:
+                    print(f'Error con {id}, respuesta api: {data_obras}, data: {db_obra}, url: {url}, error: {e}')
+                    break
+                
+            for obra in self.obras:
+                obra.show()
+                print()
+            
+            indice_actual += elementos
+
+            if indice_actual < total_obras:
+                respuesta = input("¿Desea ver 20 obras más? (s/n)\n---> ")
+                respuesta = respuesta.lower()
+            
+            if respuesta != "s":
+                print("Fin de la búsqueda.")
+                break
+            
+            else:
+                print("No hay más obras por mostrar.")
+            
+            break

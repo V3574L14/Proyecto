@@ -13,15 +13,18 @@ class Obra:
 
     def show(self): 
         print(f"ID: {self.id}")
-        print(f"Titulo: {self.titulo}")
+        print(f"Título: {self.titulo}")
         print(f"Autor: {self.autor}")
     
     def detalles_obra(self): 
         print(f"Titulo: {self.titulo}")
-        print(f"Nombre del artista: {self.autor}")
-        print(f"Nacionalidad del artista: {self.nacionalidad}")
-        print(f"Fecha de nacimiento: {self.fecha_nacimiento}")
-        print(f"Fecha de muerte: {self.fecha_muerte}")
+        print("Información del artista:")
+        print(f"\tNombre: {self.autor}")
+        print(f"\tNacionalidad: {self.nacionalidad}")
+        print(f"\tFecha de nacimiento: {self.fecha_nacimiento}")
+        print(f"\tFecha de muerte: {self.fecha_muerte}")
         print(f"Tipo: {self.tipo}")
         print(f"Año de creacion: {self.año_creacion}")
         print(f"Imagen: {self.imagen}")
+    
+    # hay varias obras con informacion vacia. reemplazar por "Desconocido". 
