@@ -12,16 +12,16 @@ class Obra:
         self.imagen = imagen
 
     def show(self): 
-        print(f"ID: {self.id}")
-        print(f"Título: {self.titulo}")
-        print(f"Autor: {"Desconocido" if self.autor == "" else self.autor}")
+        print(f"* ID: {self.id}")
+        print(f"* Título: {self.titulo}")
+        print(f"* Autor: {"Desconocido" if self.autor == "" else self.autor}")
     
     def detalles_obra(self): 
-        print(f"Titulo: {self.titulo}")
-        print("Información del artista:")
-        print(f"\tNombre: {"Desconocido" if self.autor == "" else self.autor}")
-        print(f"\tNacionalidad: {"-" if self.nacionalidad == "" else self.nacionalidad}")
-        print(f"\tFecha de nacimiento: {"-" if self.fecha_nacimiento == "" else self.fecha_nacimiento}")
-        print(f"\tFecha de muerte: {"-" if self.fecha_muerte == "" else self.fecha_muerte}")
-        print(f"Tipo: {self.tipo}")
-        print(f"Año de creacion: {self.año_creacion}")
+        print(f"TITULO: {self.titulo}")
+        print("INFORMACION DEL ARTISTA")
+        print(f"\tNOMBRE: {"Desconocido" if self.autor == "" else self.autor}")
+        print(f"\tNACIONALIDAD: {"-" if self.nacionalidad == "" else self.nacionalidad}")
+        print(f"\tFECHA DE NACIMIENTO: {"-" if self.fecha_nacimiento == "" else self.fecha_nacimiento}")
+        print(f"\tFECHA DE MUERTE: {"-" if self.fecha_muerte == "" else self.fecha_muerte}")
+        print(f"TIPO: {self.tipo}")
+        print(f"AÑO DE CREACION: {self.año_creacion}")
