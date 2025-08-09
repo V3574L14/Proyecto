@@ -2,7 +2,7 @@ import requests
 
 def guardar_imagen_desde_url(url, nombre_archivo):
     """
-    Guardar imagen a partir del url. 
+    Descarga una imagen desde una URL y la guarda en un archivo. 
 
     Args: 
         url (str): Enlace de la imagen de la obra.
@@ -14,10 +14,10 @@ def guardar_imagen_desde_url(url, nombre_archivo):
     """  
     try: 
         response = requests.get(url, stream=True) 
-        response.raise_for_status()  # Lanza una excepción para códigos de estado de error (4xx o 5xx) 
+        response.raise_for_status() 
 
         content_type = response.headers.get('Content-Type') 
-        extension = '.png'  # Valor por defecto 
+        extension = '.png' 
         
         if content_type: 
             if 'image/png' in content_type: 
