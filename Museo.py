@@ -25,18 +25,21 @@ class Museo:
 
             if menu == "1": 
                 print()
-                self.busqueda_por_departamento()
-                self.mostrar_detalles_obra()
+                busqueda_dpto = self.busqueda_por_departamento()
+                if busqueda_dpto != False: 
+                    self.mostrar_detalles_obra()
             
             elif menu == "2": 
                 print()
-                self.busqueda_por_nacionalidad()
-                self.mostrar_detalles_obra()
+                busqueda_nac = self.busqueda_por_nacionalidad()
+                if busqueda_nac != False: 
+                    self.mostrar_detalles_obra()
 
             elif menu == "3": 
                 print()
-                self.busqueda_por_autor()
-                self.mostrar_detalles_obra()
+                busqueda_autor = self.busqueda_por_autor()
+                if busqueda_autor != False: 
+                    self.mostrar_detalles_obra()
             
             elif menu == "4": 
                 break
@@ -53,7 +56,7 @@ class Museo:
         seguir = True
         while seguir: 
             try: 
-                id_seleccionado = int(input("\n---> Ingrese el ID de la obra seleccionada de la lista: "))
+                id_seleccionado = int(input("---> Ingrese el ID de la obra seleccionada de la lista: "))
                 for obra in self.obras:
                     if id_seleccionado == obra.id:
                         seguir = False
@@ -93,7 +96,11 @@ class Museo:
         url_autores = "https://collectionapi.metmuseum.org/public/collection/v1/search"
         data_autor = requests.get(url_autores, params={"artistOrCulture": "true", "q": autor_seleccionado})
         db_autor = data_autor.json()
-        self.obtener_obras(db_autor["objectIDs"])
+        if db_autor["total"] == 0:
+            print("~ No hay obras por mostrar.\n")
+            return False
+        else:
+            self.obtener_obras(db_autor["objectIDs"])
 
 
     def busqueda_por_nacionalidad(self):
@@ -119,7 +126,11 @@ class Museo:
         url_nacionalidades = "https://collectionapi.metmuseum.org/public/collection/v1/search"
         data_nacionalidad = requests.get(url_nacionalidades, params={"artistOrCulture": "true", "q": nac_seleccionada})
         db_nacionalidad = data_nacionalidad.json()
-        self.obtener_obras(db_nacionalidad["objectIDs"])
+        if db_nacionalidad["total"] == 0:
+            print("~ No hay obras por mostrar.\n")
+            return False
+        else:
+            self.obtener_obras(db_nacionalidad["objectIDs"])
         
 
     def busqueda_por_departamento(self): 
@@ -154,7 +165,11 @@ class Museo:
         url_obras = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
         data_obras_id = requests.get(url_obras, params={"departmentIds": eleccion, "limit":10})
         db_obras = data_obras_id.json()
-        self.obtener_obras(db_obras['objectIDs'])
+        if db_obras["total"] == 0:
+            print("~ No hay obras por mostrar.\n")
+            return False
+        else:
+            self.obtener_obras(db_obras["objectIDs"])
     
 
     def obtener_obras(self, db_obras_id):
@@ -201,7 +216,7 @@ class Museo:
                     respuesta = input("\t¿Desea ver 20 obras más?\n\t(Ingrese s de ser afirmativa su respuesta, de lo contrario ingrese cualquier otro caracter)\n---> ")
                     respuesta = respuesta.lower()
                 if respuesta != "s":
-                    print("\nFin de la búsqueda.")
+                    print("\nFin de la búsqueda.\n")
                     break
                 else:
                     print("\nBuscando más obras...")
