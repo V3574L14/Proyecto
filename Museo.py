@@ -21,7 +21,7 @@ class Museo:
 
         """ 
         while True: 
-            menu = input("\n__________________________________________________________________________________\n\n\t\t\t\t  ~ METROART MUSEUM ~\n\n¡Bienvenido al catálogo en línea de la colección del Museo Metropolitano de Arte!\n\nVer lista de obras por:\n\t1. Departamento\n\t2. Nacionalidad del autor\n\t3. Nombre del autor\n\t4. Salir\n---> ")
+            menu = input("\n__________________________________________________________________________________\n\n\t\t\t\t  ~ METROART MUSEUM ~\n\n¡Bienvenido al catálogo en línea de la colección del Museo Metropolitano de Arte!\n\nVer listado de obras por:\n\t1. Departamento\n\t2. Nacionalidad del autor\n\t3. Nombre del autor\n\t4. Salir\n---> ")
 
             if menu == "1": 
                 print()
@@ -53,7 +53,7 @@ class Museo:
         seguir = True
         while seguir: 
             try: 
-                id_seleccionado = int(input("---> Ingrese el ID de la obra seleccionada de la lista: "))
+                id_seleccionado = int(input("\n---> Ingrese el ID de la obra seleccionada de la lista: "))
                 for obra in self.obras:
                     if id_seleccionado == obra.id:
                         seguir = False
@@ -66,7 +66,7 @@ class Museo:
             if obra.id == id_seleccionado:
                 print()
                 obra.detalles_obra()
-                ver_imagen = input("\n**   ¿Desea ver la imagen de la obra en otra ventana?\n**   (Ingrese (s) de ser afirmativa su respuesta, de lo contrario ingrese cualquier otro caracter)\n---> ")
+                ver_imagen = input("\n\t¿Desea ver la imagen de la obra en otra ventana?\n\t(Ingrese (s) de ser afirmativa su respuesta, de lo contrario ingrese cualquier otro caracter)\n---> ")
                 if ver_imagen == "s": 
                     if obra.imagen == "":
                         print("~ Imagen no disponible.")
@@ -75,7 +75,7 @@ class Museo:
                         nombre_archivo_destino = "imagen_obra"                 
                         nombre_archivo_destino = guardar_imagen_desde_url(api_url, nombre_archivo_destino) 
                         img = Image.open(nombre_archivo_destino) 
-                        img.show() 
+                        img.show()
 
 
     def busqueda_por_autor(self):
@@ -85,7 +85,7 @@ class Museo:
         """  
         while True: 
             try:
-                autor_seleccionado = str(input("**   Escriba el nombre del autor:\n**   (Asegúrese de escribirlo correctamente)\n---> "))
+                autor_seleccionado = str(input("\tEscriba el nombre del autor:\n\t(Asegúrese de escribirlo correctamente)\n---> "))
                 break
             except ValueError:
                 print("~ Ingreso inválido.\n")
@@ -108,7 +108,7 @@ class Museo:
         seguir = True
         while seguir: 
             try:
-                nac_seleccionada = str(input("**   Escriba la nacionalidad del autor:\n**   (Asegúrese de escribirlo tal como aparece en el listado)\n---> "))
+                nac_seleccionada = str(input("\tEscriba la nacionalidad del autor:\n\t(Asegúrese de escribirlo tal como aparece en el listado)\n---> "))
                 for i in lista: 
                     if nac_seleccionada == i: 
                         seguir = False
@@ -142,7 +142,7 @@ class Museo:
         
         while True: 
             try:
-                eleccion = int(input("---> Ingrese el ID del departamento seleccionado: "))
+                eleccion = int(input("\n---> Ingrese el ID del departamento seleccionado: "))
                 if eleccion == 0 or eleccion == 2 or eleccion == 20 or eleccion > 21: 
                     print("~ Ingreso inválido. Debe ingresar el número de ID de uno de los Departamentos mostrados.\n")
                     continue 
@@ -171,7 +171,7 @@ class Museo:
         indice_actual = 0 
         elementos = 20
         total_obras = len(db_obras_id)
-        print(f"Total de obras encontradas: {total_obras}")
+        print(f"\nTotal de obras encontradas: {total_obras}")
         print("Buscando obras...")
         print()
 
@@ -198,7 +198,7 @@ class Museo:
 
             if total_obras > 20:
                 if indice_actual < total_obras:
-                    respuesta = input("\n**   ¿Desea ver 20 obras más?\n**   (Ingrese s de ser afirmativa su respuesta, de lo contrario ingrese cualquier otro caracter)\n---> ")
+                    respuesta = input("\t¿Desea ver 20 obras más?\n\t(Ingrese s de ser afirmativa su respuesta, de lo contrario ingrese cualquier otro caracter)\n---> ")
                     respuesta = respuesta.lower()
                 if respuesta != "s":
                     print("\nFin de la búsqueda.")
