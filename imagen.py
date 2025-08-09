@@ -1,7 +1,17 @@
 import requests
 
-def guardar_imagen_desde_url(url, nombre_archivo): 
+def guardar_imagen_desde_url(url, nombre_archivo):
+    """
+    Guardar imagen a partir del url. 
 
+    Args: 
+        url (str): Enlace de la imagen de la obra.
+        nombre_archivo (str): Nombre con el que se guardará la imagen. 
+    
+    Returns: 
+        nombre_archivo_final (str): Nombre con el que se guardará la imagen con su extensión.
+
+    """  
     try: 
         response = requests.get(url, stream=True) 
         response.raise_for_status()  # Lanza una excepción para códigos de estado de error (4xx o 5xx) 

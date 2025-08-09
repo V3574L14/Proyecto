@@ -2,52 +2,62 @@ from Departamento import Departamento
 from Obra import Obra
 from PIL import Image
 from imagen import guardar_imagen_desde_url
+from validacion_lista_nacionalidades import lista
 import requests
 
 class Museo: 
     def __init__(self):
+        """
+        Definir atributos de la clase. 
+
+        """ 
         self.departamentos = []
         self.obras = []
 
-    def start(self): 
 
+    def start(self):
+        """
+        Iniciar el programa. 
+
+        """ 
         while True: 
             menu = input("\n__________________________________________________________________________________\n\n\t\t\t\t  ~ METROART MUSEUM ~\n\n¡Bienvenido al catálogo en línea de la colección del Museo Metropolitano de Arte!\n\nVer lista de obras por:\n\t1. Departamento\n\t2. Nacionalidad del autor\n\t3. Nombre del autor\n\t4. Salir\n---> ")
 
             if menu == "1": 
                 print()
                 self.busqueda_por_departamento()
-                print()
                 self.mostrar_detalles_obra()
             
             elif menu == "2": 
                 print()
                 self.busqueda_por_nacionalidad()
-                print()
                 self.mostrar_detalles_obra()
 
             elif menu == "3": 
                 print()
                 self.busqueda_por_autor()
-                print()
                 self.mostrar_detalles_obra()
             
             elif menu == "4": 
                 break
 
             else:
-                print("~ Ingreso inválido. Debe ingresar un número (1, 2, 3, 4).") 
+                print("\n~ Ingreso inválido. Debe ingresar un número (1, 2, 3, 4).") 
 
 
     def mostrar_detalles_obra(self):
-        while True: 
+        """
+        Mostrar los detalles de la obra seleccionada según el filtro elegido en el menú. 
+
+        """ 
+        seguir = True
+        while seguir: 
             try: 
                 id_seleccionado = int(input("---> Ingrese el ID de la obra seleccionada de la lista: "))
-                # for obra in self.obras: 
-                #     if id_seleccionado != obra.id:
-                #         print("~ Ingreso inválido. Debe escribir el ID de una de las obras mostradas.\n")
-                #     continue
-                break
+                for obra in self.obras:
+                    if id_seleccionado == obra.id:
+                        seguir = False
+                        break
             except ValueError:
                 print("~ Ingreso inválido. Debe escribir el ID de una de las obras mostradas.\n")
 
@@ -56,23 +66,26 @@ class Museo:
             if obra.id == id_seleccionado:
                 print()
                 obra.detalles_obra()
-                ver_imagen = input("\n---> ¿Desea ver la imagen de la obra en una ventana aparte? (s/n): ")
+                ver_imagen = input("\n**   ¿Desea ver la imagen de la obra en otra ventana?\n**   (Ingrese (s) de ser afirmativa su respuesta, de lo contrario ingrese cualquier otro caracter)\n---> ")
                 if ver_imagen == "s": 
                     if obra.imagen == "":
                         print("~ Imagen no disponible.")
                     else: 
                         api_url = obra.imagen
-                        nombre_archivo_destino = "logo_aleatorio"                 
+                        nombre_archivo_destino = "imagen_obra"                 
                         nombre_archivo_destino = guardar_imagen_desde_url(api_url, nombre_archivo_destino) 
                         img = Image.open(nombre_archivo_destino) 
                         img.show() 
 
 
+    def busqueda_por_autor(self):
+        """
+        Filtrar la lista de obras según el autor indicado por el usuario. 
 
-    def busqueda_por_autor(self): 
+        """  
         while True: 
             try:
-                autor_seleccionado = str(input("---> Ingrese el nombre del autor: ")).isalpha()
+                autor_seleccionado = str(input("**   Escriba el nombre del autor:\n**   (Asegúrese de escribirlo correctamente)\n---> "))
                 break
             except ValueError:
                 print("~ Ingreso inválido.\n")
@@ -83,15 +96,23 @@ class Museo:
         self.obtener_obras(db_autor["objectIDs"])
 
 
+    def busqueda_por_nacionalidad(self):
+        """
+        Mostrar lista de nacionalidades. 
+        Filtrar la lista de obras según la nacionalidad del autor indicada por el usuario.  
 
-    def busqueda_por_nacionalidad(self): 
+        """  
         archivo = open("CH_Nationality_List_20171130_v1.csv")
         print(archivo.read())
         
-        while True: 
+        seguir = True
+        while seguir: 
             try:
-                nac_seleccionada = str(input("---> Escriba la nacionalidad del autor: "))
-                break
+                nac_seleccionada = str(input("**   Escriba la nacionalidad del autor:\n**   (Asegúrese de escribirlo tal como aparece en el listado)\n---> "))
+                for i in lista: 
+                    if nac_seleccionada == i: 
+                        seguir = False
+                        break
             except ValueError:
                 print("~ Ingreso inválido.\n")
         
@@ -101,8 +122,13 @@ class Museo:
         self.obtener_obras(db_nacionalidad["objectIDs"])
         
 
-
     def busqueda_por_departamento(self): 
+        """
+        Crear clase Departamentos. 
+        Mostrar Departamentos. 
+        Filtrar la lista de obras según el departamento del autor indicado por el usuario.  
+
+        """ 
         url_departamentos = "https://collectionapi.metmuseum.org/public/collection/v1/departments"
         data_departamentos = requests.get(url_departamentos)
         db_departamentos = data_departamentos.json()
@@ -124,7 +150,6 @@ class Museo:
             except ValueError:
                 print("~ Ingreso inválido. Debe ingresar el número de ID de uno de los Departamentos mostrados.\n")
 
-        
         print()
         url_obras = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
         data_obras_id = requests.get(url_obras, params={"departmentIds": eleccion, "limit":10})
@@ -132,10 +157,16 @@ class Museo:
         self.obtener_obras(db_obras['objectIDs'])
     
 
-
     def obtener_obras(self, db_obras_id):
-        url_obras = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
+        """
+        Crear clase Obras. 
+        Mostrar de 20 en 20 obras del conjunto de obras obtenidas según la selección del usuario. 
 
+        Args: 
+            db_obras_id (list): Lista de id's que coinciden con la elección del usuario.
+
+        """ 
+        url_obras = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
         obras = []
         indice_actual = 0 
         elementos = 20
@@ -166,16 +197,13 @@ class Museo:
             indice_actual += elementos
 
             if total_obras > 20:
-
                 if indice_actual < total_obras:
-                    
-                    respuesta = input("---> ¿Desea ver 20 obras más? (s/n): ")
+                    respuesta = input("\n**   ¿Desea ver 20 obras más?\n**   (Ingrese s de ser afirmativa su respuesta, de lo contrario ingrese cualquier otro caracter)\n---> ")
                     respuesta = respuesta.lower()
-                
-                if respuesta == "n":
-                    print("Fin de la búsqueda.")
+                if respuesta != "s":
+                    print("\nFin de la búsqueda.")
                     break
-                elif respuesta == "s":
-                    print("Buscando más obras...")
-                
+                else:
+                    print("\nBuscando más obras...")
+
         self.obras = obras 
